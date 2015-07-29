@@ -1,0 +1,5 @@
+*.bin
+*.log
+*.dmp
+*.dump
+node_modules/
