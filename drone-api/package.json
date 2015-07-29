@@ -1,0 +1,9 @@
+{
+    "name":"rolling-spider-server-qpi",
+    "description":"A network API for controlling the Parrot Rolling Spider drone from a server",
+    "dependencies": {
+        "express":"~4.0.0",
+        "rolling-spider": "~1.4.1",
+        "temporal": "^0.4.0"
+    }
+}
