@@ -1,0 +1,47 @@
+#%RAML 0.8
+
+
+title: rolling-spider-server-api
+baseUri: http://localhost:7777/drone-api
+version: v0.1
+
+resourceTypes:
+  - command:
+      description: <<commandName>> command
+      get:
+        description: execute <commandName>> command
+        responses:
+          200:
+            body:
+              application/json:
+                example: |
+                      <<commandExampleRes>>
+          400:
+            body:
+              application/json:
+                example: | 
+                  { "message":"an error occured executing <<commandName>>"}
+
+/rs:
+  description: The Rolling Spider drone control API
+  get:
+    description: Get data for the drone
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include drone_json_example.txt
+
+  /takeoff:
+    type:
+      command:
+        commandName: takeOff
+        commandExampleRes: {"message":"takeOff command sent"}
+
+  /land:
+    type:
+      command:
+        commandName: land
+        commandExampleRes: {"message":"land command sent"}
+        
+
