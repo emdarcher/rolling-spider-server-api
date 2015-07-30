@@ -21,6 +21,12 @@ resourceTypes:
               application/json:
                 example: | 
                   { "message":"an error occured executing <<commandName>>"}
+       
+  - ParamCommand:
+      description: <<commandName>> command
+      
+
+
 
 /rs:
   description: The Rolling Spider drone control API
@@ -31,6 +37,19 @@ resourceTypes:
         body:
           application/json:
             example: !include drone_json_example.txt
+  put:
+    description: Set speed and step options
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {"speed":65, "step":40}
+      400:
+        body:
+          application/json:
+            example: |
+              {"error":"5d is not a valid value for speed!"}
 
   /takeoff:
     type:
@@ -43,5 +62,10 @@ resourceTypes:
       command:
         commandName: land
         commandExampleRes: {"message":"land command sent"}
+  /calibrate:
+    type:
+      command:
+        commandName: calibrate
+        commandExampleRes: {"message":"calibrating drone trim for stability"}
         
 

@@ -2,5 +2,7 @@
   "Bluetooth_id":"id_num",
   "battery_level":"40%",
   "signal_strength":"-63",
-  "flying":true
+  "flying":true,
+  "speed":80,
+  "steps":55
 }
