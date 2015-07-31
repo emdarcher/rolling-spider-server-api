@@ -1,6 +1,5 @@
 #%RAML 0.8
 
-
 title: rolling-spider-server-api
 baseUri: http://localhost:7777/drone-api
 version: v0.1
@@ -15,34 +14,56 @@ resourceTypes:
             body:
               application/json:
                 example: |
-                      <<commandExampleRes>>
-          400:
+                      <<commandSuccessRes>>
+          500:
             body:
               application/json:
                 example: | 
-                  { "message":"an error occured executing <<commandName>>"}
+                  { "error":"an error occured executing <<commandName>>"}
        
-  - ParamCommand:
+  - paramCommand:
       description: <<commandName>> command
-      
+      put:
+        description: |
+          execute <<commandName>> with prameters from json
+        body:
+          application/json:
+            example: |
+              {"speed":65, "step":40}
+        responses:
+          200:
+            body:
+              application/json:
+                example: | 
+                  <<commandSuccessRes>>
+          400:
+            body:
+              application/json:
+                example: |
+                  {"error":"5d is not a valid value for speed!"}
+          500:
+            body:
+              application/json:
+                example: | 
+                  {"error":"executing <<commandName>> failed!"}
 
-
-
+              
 /rs:
   description: The Rolling Spider drone control API
   get:
-    description: Get data for the drone
+    description: Gets updated data for the drone
     responses:
       200:
         body:
           application/json:
             example: !include drone_json_example.txt
   put:
-    description: Set speed and step options
+    description: Set global speed and step options
     responses:
       200:
         body:
           application/json:
+            #note a step is approximately 50ms
             example: |
               {"speed":65, "step":40}
       400:
@@ -55,17 +76,117 @@ resourceTypes:
     type:
       command:
         commandName: takeOff
-        commandExampleRes: {"message":"takeOff command sent"}
+        commandSuccessRes: {"message":"takeOff command sent"}
 
   /land:
     type:
       command:
         commandName: land
-        commandExampleRes: {"message":"land command sent"}
+        commandSuccessRes: {"message":"land command sent"}
   /calibrate:
     type:
       command:
         commandName: calibrate
-        commandExampleRes: {"message":"calibrating drone trim for stability"}
-        
+        commandSuccessRes: {"message":"calibrating drone trim for stability"}
+  /emergency:
+    type:
+      command:
+        commandName: emergency
+        commandSuccessRes: {"message":"emergency command sent"}
+#  /disconnect:
+#    type:
+#      command:
+#        commandName: disconnect
+#        commandSuccessRes: {"message":"disconnecting from drone"}
+#
+  
+  /up:
+    description: Makes the drone go up
+    type:
+      paramCommand:
+        commandName: up
+        commandSuccessRes: {"message":"made the drone go up"}
+  
+  /down:
+    description: Makes the drone go down
+    type:
+      paramCommand:
+        commandName: down 
+        commandSuccessRes: {"message":"made the drone go down"}
+  
+  /turnRight:
+    description: Makes the drone turn right
+    type:
+      paramCommand:
+        commandName: turnRight
+        commandSuccessRes: {"message":"made the drone turn right"}
 
+  /turnLeft:
+    description: Makes the drone turn left
+    type:
+      paramCommand:
+        commandName: turnLeft
+        commandSuccessRes: {"message":"made the drone turn left"}
+
+  /forward:
+    description: Makes the drone go forward
+    type:
+      paramCommand:
+        commandName: forward
+        commandSuccessRes: {"message":"made the drone go forward"}
+
+  /left:
+    description: Makes the drone move left
+    type:
+      paramCommand:
+        commandName: left
+        commandSuccessRes: {"message":"made the drone move left"}
+
+  /right:
+    description: Makes the drone move right
+    type:
+      paramCommand:
+        commandName: right
+        commandSuccessRes: {"message":"made the drone move right"}
+
+  /tiltLeft:
+    description: Make the drone tilt left
+    type:
+      paramCommand:
+        commandName: tiltLeft
+        commandSuccessRes: {"message":"made the drone tilt left"}
+
+  /tiltRight:
+    description: Make the drone tilt right
+    type:
+      paramCommand:
+        commandName: tiltRight
+        commandSuccessRes: {"message":"made the drone tilt right"}
+
+  /frontFlip:
+    description: Make the drone do an amazing front flip
+    type:
+      paramCommand:
+        commandName: frontFlip
+        commandSuccessRes: {"message":"made the drone do an awesome front flip"}
+
+  /backFlip:
+    description: Make the drone do an amazing back flip
+    type:
+      paramCommand:
+        commandName: backFlip
+        commandSuccessRes: {"message":"made the drone do an awesome back flip"}
+
+  /leftFlip:
+    description: Make the drone do an amazing left flip
+    type:
+      paramCommand:
+        commandName: leftFlip
+        commandSuccessRes: {"message":"made the drone do an awesome left flip"}
+
+  /rightFlip:
+    description: Make the drone do an amazing right flip
+    type:
+      paramCommand:
+        commandName: rightFlip
+        commandSuccessRes: {"message":"made the drone do an awesome right flip"}
