@@ -1,5 +1,5 @@
 {
-  "Bluetooth_id":"id_num",
+  "Bluetooth_uuid":"id_num",
   "signal_strength":"-63",
   "flying":true,
   "battery":"40",
