@@ -17,6 +17,21 @@ function connectDrone( cb ){
     
 }
 
+function get_data_from_drone( cb ){
+    var error = false;
+    console.log("getting data from drone");
+    rollingSpider.signalStrength(function(err, rssi){
+        if(err) error = err;
+        drone_data.signal_strength = rssi;
+    });
+    drone_data.battery = rollingSpider.status.battery;
+    drone_data.flying = rollingSpider.status.flying;
+    if(error){
+        console.log("error getting data from drone");
+    }
+    return cb(error); 
+}
+
 var init_running = true;
 exports.init_drone = function(uuid, cb ){
     var error = false;
@@ -36,25 +51,49 @@ exports.init_drone = function(uuid, cb ){
                 } else {
                     rollingSpider.calibrate(); 
                     rollingSpider.startPing();
-                    rollingSpider.signalStrength(function(err, rssi){
-                        if(err) throw err;
-                        drone_data.signal_strength = rssi;
-                    });
-                    drone_data.battery = rollingSpider.status.battery;
-                    drone_data.flying = rollingSpider.status.flying;
+                    get_data_from_drone(function(e){if(e)throw e;});
+                    //rollingSpider.signalStrength(function(err, rssi){
+                    //    if(err) throw err;
+                    //    drone_data.signal_strength = rssi;
+                    //});
+                    //drone_data.battery = rollingSpider.status.battery;
+                    //drone_data.flying = rollingSpider.status.flying;
                     console.log('setup drone ' + uuid);
                 }
+                return cb(error);
             });
         }
     });
     init_running = false;
-    return cb(error);
+    //return cb(error);
 };
 
 exports.getDroneData = function(req, res, next){
     console.log('sending data for drone');
-    res.json(drone_data);
+    get_data_from_drone(function(err){
+       if(err){
+            throw err; 
+            res.json(500, { "error":"error getting data from drone" });
+       } else {
+            res.json(drone_data);
+       }    
+    });
     return next();
 };
+
+exports.droneCalibrate = function(req, res, next){
+    console.log('calibrating the drone');
+    rollingSpider.calibrate(function(err) {
+        if(err){
+            throw err;
+            console.log('error calibrating drone');   
+            res.json(500, { "error":"an error occured executing calibrate"});
+        } else {
+            res.json({"message":"calibrating drone trim for stability"});
+        }
+    });
+    return next();
+};
+
 
 

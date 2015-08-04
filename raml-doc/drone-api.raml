@@ -7,7 +7,7 @@ version: v0.1.0
 resourceTypes:
   - command:
       description: <<commandName>> command
-      get:
+      post:
         description: execute <commandName>> command
         responses:
           200:
@@ -23,7 +23,7 @@ resourceTypes:
        
   - paramCommand:
       description: <<commandName>> command
-      put:
+      post:
         description: |
           execute <<commandName>> with prameters from json
         body:
@@ -48,7 +48,7 @@ resourceTypes:
                   { "error":"executing <<commandName>> failed!"}
 
               
-/rs:
+/drone:
   description: The Rolling Spider drone control API
   get:
     description: Gets updated data for the drone
@@ -57,6 +57,11 @@ resourceTypes:
         body:
           application/json:
             example: !include drone_json_example.txt
+      500:
+        body:
+          application/json:
+            example: | 
+              { "error":"error getting data from drone" }
   put:
     description: Set global speed and step options
     responses:

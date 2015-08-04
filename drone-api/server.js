@@ -23,28 +23,30 @@ var port = process.env.PORT || 7777;
 
 // get drone UUID from shell variable
 var drone_bt_uuid = process.env.DRONE_BT_UUID;
-//
+// get api url prefix, else default /drone-api
+var prefix_path = process.env.DRONE_API_PREFIX || '/drone-api';
 
 //drone api module
 var drone = require('./routes/drone');
 
 //base middleware
-server.use(function(req,res,next){
+server.use( function(req,res,next){
     //show something happening
     console.log('Something is happening');
     next(); //go to next route
 });
 
 //test route
-server.get('/', function(req,res,next){
-    res.json({ message: "welcom to the drone control server! "
+server.get(prefix_path + '/', function(req,res,next){
+    res.json({ message: "welcome to the drone control server! "
                         + "The api can be accesed at /drone"});
     return next();
 });
 
 
 // routes directed to functions in /routes/drone.js
-server.get('/drone/', drone.getDroneData ); 
+server.get(prefix_path + '/drone/', drone.getDroneData ); 
+server.post(prefix_path + '/drone/calibrate/', drone.droneCalibrate ); 
 
 
 // start the server
@@ -52,12 +54,10 @@ server.listen(port, function() {
     console.log("Listening on port: " + port);
 });
 //init the drone 
-drone.init_drone(function(err){
+drone.init_drone(drone_bt_uuid, function(err){
     if(err){ throw err;} else {
         console.log('done initializing drone');
     }
 });
-
-// initialize the drone
 
 
