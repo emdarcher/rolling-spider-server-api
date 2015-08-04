@@ -29,7 +29,9 @@ function get_data_from_drone( cb ){
     if(error){
         console.log("error getting data from drone");
     }
-    return cb(error); 
+//    if(cb){
+        return cb(error); 
+//    }
 }
 
 var init_running = true;
@@ -95,5 +97,26 @@ exports.droneCalibrate = function(req, res, next){
     return next();
 };
 
+exports.droneTakeOff = function(req, res, next) {
+    console.log('making drone take off');
+    rollingSpider.calibrate();
+    rollingSpider.takeOff(function(){
+        console.log('drone took off, now hovering');
+        get_data_from_drone(function(e){if(e)throw e;});
+        res.json({"message":"drone took off, now hovering"});
+        rollingSpider.calibrate();   
+    });
+    return next();
+};
 
+exports.droneLand = function(req, res, next) {
+    console.log('making drone land');
+    rollingSpider.calibrate();
+    rollingSpider.land(function(){
+        console.log('drone has landed');
+        get_data_from_drone(function(e){if(e)throw e;});
+        res.json({"message":"drone has landed"});
+    });
+    return next();
+};
 
