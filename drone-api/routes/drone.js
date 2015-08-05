@@ -115,7 +115,7 @@ exports.droneTakeOff = function(req, res, next) {
             //return res.send({"message":"drone took off, now hovering"});
             res.send({"message":"drone took off, now hovering"});
             //rollingSpider.calibrate();   
-            //return next();
+            return next();
         });
         
     });
