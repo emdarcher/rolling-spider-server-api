@@ -39,7 +39,7 @@ exports.init_drone = function(uuid, cb ){
     var error = false;
     //connect and setup drone
     rollingSpider = new RollingSpider(uuid);
-    drone_data.Bluetooth_uuid = uuid;
+    if(uuid) drone_data.Bluetooth_uuid = uuid;
     rollingSpider.connect(function(err){
         if(err){ 
             error = err;
@@ -61,6 +61,9 @@ exports.init_drone = function(uuid, cb ){
                     //drone_data.battery = rollingSpider.status.battery;
                     //drone_data.flying = rollingSpider.status.flying;
                     console.log('setup drone ' + uuid);
+                    rollingSpider.on('battery', function(){
+                        drone_data.battery = rollingSpider.status.battery;
+                    });
                 }
                 return cb(error);
             });
@@ -99,24 +102,49 @@ exports.droneCalibrate = function(req, res, next){
 
 exports.droneTakeOff = function(req, res, next) {
     console.log('making drone take off');
-    rollingSpider.calibrate();
+    rollingSpider.calibrate(function(err){
+    if(err) throw err;
+    var cmdTimeout = setTimeout(function(){
+        res.send(500, {"error":"takeoff taking too long"});
+        return next();
+    }, 8000);
     rollingSpider.takeOff(function(){
         console.log('drone took off, now hovering');
-        get_data_from_drone(function(e){if(e)throw e;});
-        res.json({"message":"drone took off, now hovering"});
-        rollingSpider.calibrate();   
+        clearTimeout(cmdTimeout);
+        //get_data_from_drone(function(e){if(e)throw e;});
+        //return res.send({"message":"drone took off, now hovering"});
+        res.send({"message":"drone took off, now hovering"});
+//        rollingSpider.calibrate();   
+        //return next();
     });
+    
+    });
+    //next();
     return next();
 };
 
 exports.droneLand = function(req, res, next) {
     console.log('making drone land');
-    rollingSpider.calibrate();
+    rollingSpider.calibrate(function(err){
+    if(err)throw err;
     rollingSpider.land(function(){
         console.log('drone has landed');
-        get_data_from_drone(function(e){if(e)throw e;});
-        res.json({"message":"drone has landed"});
+        //get_data_from_drone(function(e){if(e)throw e;});
+        //return res.send({"message":"drone has landed"});
+        res.send({"message":"drone has landed"});
+        //return next();
     });
+    
+    });
+//    next();
     return next();
 };
 
+exports.droneEmergency = function(req, res, next) {
+    console.log('sending emergency command');
+    rollingSpider.emergency(function(){
+        console.log('drone executed emergency command');
+        res.send({"message":"drone executed emergency command"});
+    });
+    return next(); 
+};

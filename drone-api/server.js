@@ -26,7 +26,7 @@ var drone_bt_uuid = process.env.DRONE_BT_UUID;
 // get api url prefix, else default /drone-api
 var prefix_path = process.env.DRONE_API_PREFIX || '/drone-api';
 
-var debug_val = process.env.DRONE_DEBUG;
+//var debug_val = process.env.DRONE_DEBUG;
 
 
 //drone api module
@@ -52,6 +52,7 @@ server.get(prefix_path + '/drone/', drone.getDroneData );
 server.post(prefix_path + '/drone/calibrate/', drone.droneCalibrate ); 
 server.post(prefix_path + '/drone/takeOff/', drone.droneTakeOff ); 
 server.post(prefix_path + '/drone/land/', drone.droneLand ); 
+server.post(prefix_path + '/drone/emergency/', drone.droneEmergency ); 
 
 
 // start the server
