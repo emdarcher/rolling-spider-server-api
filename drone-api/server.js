@@ -53,6 +53,7 @@ server.post(prefix_path + '/drone/calibrate/', drone.droneCalibrate );
 server.post(prefix_path + '/drone/takeOff/', drone.droneTakeOff ); 
 server.post(prefix_path + '/drone/land/', drone.droneLand ); 
 server.post(prefix_path + '/drone/emergency/', drone.droneEmergency ); 
+server.post(prefix_path + '/drone/forward/', drone.droneForward ); 
 
 
 // start the server

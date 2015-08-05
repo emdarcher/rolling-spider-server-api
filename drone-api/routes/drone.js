@@ -103,21 +103,21 @@ exports.droneCalibrate = function(req, res, next){
 exports.droneTakeOff = function(req, res, next) {
     console.log('making drone take off');
     rollingSpider.calibrate(function(err){
-    if(err) throw err;
-    var cmdTimeout = setTimeout(function(){
-        res.send(500, {"error":"takeoff taking too long"});
-        return next();
-    }, 8000);
-    rollingSpider.takeOff(function(){
-        console.log('drone took off, now hovering');
-        clearTimeout(cmdTimeout);
-        //get_data_from_drone(function(e){if(e)throw e;});
-        //return res.send({"message":"drone took off, now hovering"});
-        res.send({"message":"drone took off, now hovering"});
-//        rollingSpider.calibrate();   
-        //return next();
-    });
-    
+        if(err) throw err;
+        var cmdTimeout = setTimeout(function(){
+            res.send(500, {"error":"takeoff command taking too long"});
+            return next();
+        }, 8000);
+        rollingSpider.takeOff(function(){
+            console.log('drone took off, now hovering');
+            clearTimeout(cmdTimeout);
+            //get_data_from_drone(function(e){if(e)throw e;});
+            //return res.send({"message":"drone took off, now hovering"});
+            res.send({"message":"drone took off, now hovering"});
+            //rollingSpider.calibrate();   
+            //return next();
+        });
+        
     });
     //next();
     return next();
@@ -126,15 +126,20 @@ exports.droneTakeOff = function(req, res, next) {
 exports.droneLand = function(req, res, next) {
     console.log('making drone land');
     rollingSpider.calibrate(function(err){
-    if(err)throw err;
-    rollingSpider.land(function(){
-        console.log('drone has landed');
-        //get_data_from_drone(function(e){if(e)throw e;});
-        //return res.send({"message":"drone has landed"});
-        res.send({"message":"drone has landed"});
-        //return next();
-    });
-    
+        if(err)throw err;
+        var cmdTimeout = setTimeout(function(){
+            res.send(500, {"error":"land command taking too long"});
+            return next();
+        }, 8000);
+        rollingSpider.land(function(){
+            console.log('drone has landed');
+            clearTimeout(cmdTimeout);
+            //get_data_from_drone(function(e){if(e)throw e;});
+            //return res.send({"message":"drone has landed"});
+            res.send({"message":"drone has landed"});
+            //return next();
+        });
+        
     });
 //    next();
     return next();
@@ -147,4 +152,56 @@ exports.droneEmergency = function(req, res, next) {
         res.send({"message":"drone executed emergency command"});
     });
     return next(); 
+};
+
+/*
+ * cmdDetails = {
+ *  cmd_func: <rs_func>,
+ *  cmd_name: <funcname>,
+ *  options: {
+ *      speed: <speed>,
+ *      steps: <steps>
+ *  }
+ * };
+ * */
+function driveCmd(req, res, next, cmdDetails) {
+    //executes a drive type command
+    var error = false;
+    console.log('calling driveCmd with ' + cmdDetails.cmd_name);
+    Object.keys(cmdDetails.options).forEach(function(key){
+        var item = cmdDetails.options[key];
+        if( typeof item !== "number" ){
+            console.log(item + ' is not a number!');
+            return res.json(400, {"error": item + " is not a number!"});
+        } else if (!((item >= 0) && (item <= 100))){
+            console.log(item + " is not in range 0-100!");
+            return res.json(400, {"error": item + " is not in range 0-100!"});  
+        }
+    });
+    console.log('sending ' + cmdDetails.cmd_name + ' command');
+    
+    cmdDetails.cmd_func(cmdDetails.options, function (){
+        console.log('drone executed ' + cmdDetails.cmd_name + ' command');
+        return res.json({"message":"drone executed " 
+                            + cmdDetails.cmd_name
+                            + " command"});
+    });
+    next();
+
+}
+
+exports.droneForward = function(req, res, next) {
+    //var json_options = req.params;
+    console.log('called path to forward function');
+    var details = {
+        //cmd_func: rollingSpider.forward,
+        cmd_func: function(opt, cb){ rollingSpider.forward(opt,cb); },
+        cmd_name: "forward",
+        options: {
+            speed: req.params.speed,
+            steps: req.params.steps 
+        }
+    }; 
+    driveCmd(req, res, next, details);
+    return next();
 };
