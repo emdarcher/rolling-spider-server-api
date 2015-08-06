@@ -45,13 +45,13 @@ exports.init_drone = function(init_data, cb ){
     rollingSpider.connect(function(err){
         if(err){ 
             error = err;
-            console.log('error connecting to drone ' + uuid);
+            console.log('error connecting to drone ' + init_data.uuid);
         } else {
-            console.log('connected to drone ' + uuid);
+            console.log('connected to drone ' + init_data.uuid);
             rollingSpider.setup(function(err) {
                 if(err){
                     error = err;
-                    console.log('error setting up drone ' + uuid);
+                    console.log('error setting up drone ' + init_data.uuid);
                 } else {
                     rollingSpider.calibrate(); 
                     rollingSpider.startPing();
@@ -62,7 +62,7 @@ exports.init_drone = function(init_data, cb ){
                     //});
                     //drone_data.battery = rollingSpider.status.battery;
                     //drone_data.flying = rollingSpider.status.flying;
-                    console.log('setup drone ' + uuid);
+                    console.log('setup drone ' + init_data.uuid);
                     rollingSpider.on('battery', function(){
                         drone_data.battery = rollingSpider.status.battery;
                     });
