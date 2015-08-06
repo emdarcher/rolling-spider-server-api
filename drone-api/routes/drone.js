@@ -9,6 +9,7 @@ var drone_data = {
   signal_strength:"0",
   flying:false,
   battery:0,
+  wheels:true,
   speed:0,
   steps:0
 };
@@ -35,11 +36,12 @@ function get_data_from_drone( cb ){
 }
 
 var init_running = true;
-exports.init_drone = function(uuid, cb ){
+exports.init_drone = function(init_data, cb ){
     var error = false;
     //connect and setup drone
-    rollingSpider = new RollingSpider(uuid);
-    if(uuid) drone_data.Bluetooth_uuid = uuid;
+    rollingSpider = new RollingSpider(init_data.uuid);
+    if(init_data.uuid) drone_data.Bluetooth_uuid = init_data.uuid;
+    drone_data.wheels = init_data.wheels;
     rollingSpider.connect(function(err){
         if(err){ 
             error = err;
@@ -195,21 +197,31 @@ exports.droneBackFlip = function(req, res, next) {
 
 exports.droneLeftFlip = function(req, res, next) {
     console.log('called path to leftFlip function');
-    var details = {
-        cmd_func: function(cb){ rollingSpider.leftFlip(cb); },
-        cmd_name: 'leftFlip'
-    };
-    singleCmd(req, res, next, details);
+    if(drone_data.wheels){
+        console.log("can't do leftFlip with wheels on!");
+        res.json(400, {"error":"can't do leftFlip with wheels on!"});     
+    } else {
+        var details = {
+            cmd_func: function(cb){ rollingSpider.leftFlip(cb); },
+            cmd_name: 'leftFlip'
+        };
+        singleCmd(req, res, next, details);
+    }
     return next();
 };
 
 exports.droneRightFlip = function(req, res, next) {
     console.log('called path to rightFlip function');
-    var details = {
-        cmd_func: function(cb){ rollingSpider.rightFlip(cb); },
-        cmd_name: 'rightFlip'
-    };
-    singleCmd(req, res, next, details);
+    if(drone_data.wheels){
+        console.log("can't do rightFlip with wheels on!");
+        res.json(400, {"error":"can't do rightFlip with wheels on!"});     
+    } else {
+        var details = {
+            cmd_func: function(cb){ rollingSpider.rightFlip(cb); },
+            cmd_name: 'rightFlip'
+        };
+        singleCmd(req, res, next, details);
+    }
     return next();
 };
 

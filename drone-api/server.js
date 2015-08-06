@@ -24,6 +24,13 @@ var port = process.env.PORT || 7777;
 var drone_bt_uuid = process.env.DRONE_BT_UUID;
 // get api url prefix, else default /drone-api
 var prefix_path = process.env.DRONE_API_PREFIX || '/drone-api';
+// get value which tells if it is using wheels
+var wheels_on = process.env.DRONE_WHEELS || true;
+
+var drone_init_data = {
+    uuid: drone_bt_uuid,
+    wheels: wheels_on
+};
 
 //var debug_val = process.env.DRONE_DEBUG;
 
@@ -73,7 +80,7 @@ server.listen(port, function() {
     console.log("Listening on port: " + port);
 });
 //init the drone 
-drone.init_drone(drone_bt_uuid,function(err){
+drone.init_drone(drone_init_data,function(err){
     if(err){ throw err;} else {
         console.log('done initializing drone');
     }

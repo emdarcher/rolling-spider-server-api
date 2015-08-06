@@ -3,6 +3,7 @@
   "signal_strength":"-63",
   "flying":true,
   "battery":"40",
+  "wheels":true,
   "speed":80,
   "steps":55
 }
