@@ -29,7 +29,7 @@ resourceTypes:
         body:
           application/json:
             example: |
-              { "speed":65, "step":40}
+              { "speed": 65, "step": 40 }
         responses:
           200:
             body:
@@ -56,7 +56,7 @@ resourceTypes:
       200:
         body:
           application/json:
-            example: !include drone_json_example.txt
+            example: !include drone_json_example.json
       500:
         body:
           application/json:
@@ -70,12 +70,12 @@ resourceTypes:
           application/json:
             #note a step is approximately 50ms
             example: |
-              {"speed":65, "step":40}
+              { "speed": 65, "step":40 }
       400:
         body:
           application/json:
             example: |
-              {"error":"5d is not a valid value for speed!"}
+              { "error":"5d is not a valid value for speed!" }
 
   /takeoff:
     type:
