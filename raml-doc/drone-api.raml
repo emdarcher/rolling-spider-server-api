@@ -3,6 +3,7 @@
 title: rolling-spider-server-api
 baseUri: http://localhost:7777/drone-api
 version: v0.1.0
+mediaType: application/json
 
 resourceTypes:
   - command:
@@ -12,14 +13,12 @@ resourceTypes:
         responses:
           200:
             body:
-              application/json:
-                example: |
-                      <<commandSuccessRes>>
+              example: |
+                    <<commandSuccessRes>>
           500:
             body:
-              application/json:
-                example: | 
-                  { "error":"an error occured executing <<commandName>>"}
+              example: | 
+                { "error":"an error occured executing <<commandName>>"}
        
   - paramCommand:
       description: <<commandName>> command
@@ -27,26 +26,22 @@ resourceTypes:
         description: |
           execute <<commandName>> with prameters from json
         body:
-          application/json:
-            example: |
-              { "speed": 65, "step": 40 }
+          #note a step is approximately 50ms
+          example: |
+            { "speed": 65, "step": 40 }
         responses:
           200:
             body:
-              application/json:
-                example: | 
-                  <<commandSuccessRes>>
+              example: | 
+                <<commandSuccessRes>>
           400:
             body:
-              application/json:
-                example: |
-                  { "error":"5d is not a valid value for speed!"}
+              example: |
+                { "error":"5d is not a valid value for speed!"}
           500:
             body:
-              application/json:
-                example: | 
-                  { "error":"executing <<commandName>> failed!"}
-
+              example: | 
+                { "error":"executing <<commandName>> failed!"}
               
 /drone:
   description: The Rolling Spider drone control API
@@ -55,27 +50,11 @@ resourceTypes:
     responses:
       200:
         body:
-          application/json:
-            example: !include drone_json_example.json
+          example: !include drone_json_example.json
       500:
         body:
-          application/json:
-            example: | 
-              { "error":"error getting data from drone" }
-  put:
-    description: Set global speed and step options
-    responses:
-      200:
-        body:
-          application/json:
-            #note a step is approximately 50ms
-            example: |
-              { "speed": 65, "step":40 }
-      400:
-        body:
-          application/json:
-            example: |
-              { "error":"5d is not a valid value for speed!" }
+          example: | 
+            { "error":"error getting data from drone" }
 
   /takeoff:
     type:
@@ -88,16 +67,19 @@ resourceTypes:
       command:
         commandName: land
         commandSuccessRes: {"message":"drone has landed"}
+
   /calibrate:
     type:
       command:
         commandName: calibrate
         commandSuccessRes: {"message":"calibrating drone trim for stability"}
+
   /emergency:
     type:
       command:
         commandName: emergency
         commandSuccessRes: {"message":"drone executed emergency command"}
+
 #  /disconnect:
 #    type:
 #      command:

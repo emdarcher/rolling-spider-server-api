@@ -9,9 +9,7 @@ var server = restify.createServer({
 
 //parsers
 server.use(restify.bodyParser());
-server.use(restify.queryParser());
 server.use(restify.acceptParser(server.acceptable));
-
 
 //special handling for curl clients
 server.pre(restify.pre.userAgentConnection());
@@ -34,7 +32,6 @@ var drone_init_data = {
 
 //var debug_val = process.env.DRONE_DEBUG;
 
-
 //drone api module
 var drone = require('./routes/drone');
 
@@ -52,9 +49,8 @@ server.get(prefix_path + '/', function(req,res,next){
     return next();
 });
 
-
 // routes directed to functions in /routes/drone.js
-server.get(prefix_path + '/drone/', drone.getDroneData ); 
+server.get( prefix_path + '/drone/',            drone.getDroneData ); 
 server.post(prefix_path + '/drone/calibrate/',  drone.droneCalibrate ); 
 server.post(prefix_path + '/drone/takeOff/',    drone.droneTakeOff ); 
 server.post(prefix_path + '/drone/land/',       drone.droneLand ); 
@@ -73,7 +69,6 @@ server.post(prefix_path + '/drone/frontFlip/',  drone.droneFrontFlip );
 server.post(prefix_path + '/drone/backFlip/',   drone.droneBackFlip ); 
 server.post(prefix_path + '/drone/rightFlip/',  drone.droneRightFlip ); 
 server.post(prefix_path + '/drone/leftFlip/',   drone.droneLeftFlip ); 
-
 
 // start the server
 server.listen(port, function() {

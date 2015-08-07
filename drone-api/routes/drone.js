@@ -31,7 +31,7 @@ function get_data_from_drone( cb ){
         console.log("error getting data from drone");
     }
 //    if(cb){
-        return cb(error); 
+    return cb(error); 
 //    }
 }
 
@@ -56,12 +56,6 @@ exports.init_drone = function(init_data, cb ){
                     rollingSpider.calibrate(); 
                     rollingSpider.startPing();
                     get_data_from_drone(function(e){if(e)throw e;});
-                    //rollingSpider.signalStrength(function(err, rssi){
-                    //    if(err) throw err;
-                    //    drone_data.signal_strength = rssi;
-                    //});
-                    //drone_data.battery = rollingSpider.status.battery;
-                    //drone_data.flying = rollingSpider.status.flying;
                     console.log('setup drone ' + init_data.uuid);
                     rollingSpider.on('battery', function(){
                         drone_data.battery = rollingSpider.status.battery;
@@ -159,7 +153,7 @@ exports.droneEmergency = function(req, res, next) {
 /*
  * cmdDetails = {
  *  cmd_func: function(cb){ rs_func(cb); },
- *  cmd_name: <funcname>,
+ *  cmd_name: <funcname>
  * };
  */
 function singleCmd(req, res, next, cmdDetails) {
@@ -172,7 +166,6 @@ function singleCmd(req, res, next, cmdDetails) {
                                 + cmdDetails.cmd_name });
     });
     next();
-
 }
 
 exports.droneFrontFlip = function(req, res, next) {
@@ -259,11 +252,9 @@ function driveCmd(req, res, next, cmdDetails) {
                             + " command"});
     });
     next();
-
 }
 
 exports.droneForward = function(req, res, next) {
-    //var json_options = req.params;
     console.log('called path to forward function');
     var details = {
         cmd_func: function(opt, cb){ rollingSpider.forward(opt,cb); },
