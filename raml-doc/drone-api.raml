@@ -2,7 +2,7 @@
 
 title: rolling-spider-server-api
 baseUri: http://localhost:7777/drone-api
-version: v0.1.0
+version: v1.0.0
 mediaType: application/json
 
 resourceTypes:
@@ -27,6 +27,7 @@ resourceTypes:
           execute <<commandName>> with prameters from json
         body:
           #note a step is approximately 50ms
+          #speed and step values are numbers between 0-100
           example: |
             { "speed": 65, "step": 40 }
         responses:
@@ -80,13 +81,6 @@ resourceTypes:
         commandName: emergency
         commandSuccessRes: {"message":"drone executed emergency command"}
 
-#  /disconnect:
-#    type:
-#      command:
-#        commandName: disconnect
-#        commandSuccessRes: {"message":"disconnecting from drone"}
-#
-  
   /up:
     description: Makes the drone go up
     type:
