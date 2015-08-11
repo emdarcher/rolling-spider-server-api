@@ -1,5 +1,5 @@
 {
-    "name":"rolling-spider-server-qpi",
+    "name":"rolling-spider-server-api",
     "description":"A network API for controlling the Parrot Rolling Spider drone from a server",
     "author":"Ethan Durrant",
     "license":"MIT",
@@ -7,7 +7,7 @@
     "version":"1.0.0",
     "files":["server.js","routes/"],
     "bugs": {
-      "url": "https://github.com/emdarcher/rolling-spider-server-qpi/issues"
+      "url": "https://github.com/emdarcher/rolling-spider-server-api/issues"
     },
     "repository":{
         "type":"git",
