@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 //server
 
 var restify = require('restify');
