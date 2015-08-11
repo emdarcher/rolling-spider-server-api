@@ -1,27 +1,39 @@
 {
-    "name":"rolling-spider-server-api",
-    "description":"A network API for controlling the Parrot Rolling Spider drone from a server",
-    "author":"Ethan Durrant",
-    "license":"MIT",
-    "main":"server.js",
-    "version":"1.0.0",
-    "files":["server.js","routes/"],
-    "bugs": {
-      "url": "https://github.com/emdarcher/rolling-spider-server-api/issues"
-    },
-    "repository":{
-        "type":"git",
-        "url":"https://github.com/emdarcher/rolling-spider-server-api.git"
-    },
-    "keywords":[
-        "api","drone","rolling spider","quadcopter","parrot","server","bluetooth"
-    ],
-    "bin":{"rs-server":"./server.js"},
-    "dependencies": {
-        "restify":"~3.0.0",
-        "rolling-spider": "~1.4.1"
-    },
-    "devDependencies":{
-        "temporal": "^0.4.0"
-    }
+  "name": "rolling-spider-server-api",
+  "description": "A network API for controlling the Parrot Rolling Spider drone from a server",
+  "author": "Ethan Durrant",
+  "license": "MIT",
+  "main": "server.js",
+  "version": "1.0.1",
+  "files": [
+    "server.js",
+    "routes/"
+  ],
+  "bugs": {
+    "url": "https://github.com/emdarcher/rolling-spider-server-api/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/emdarcher/rolling-spider-server-api.git"
+  },
+  "keywords": [
+    "api",
+    "drone",
+    "rolling spider",
+    "quadcopter",
+    "parrot",
+    "server",
+    "bluetooth"
+  ],
+  "bin": {
+    "rs-server": "./server.js"
+  },
+  "dependencies": {
+    "restify": "~3.0.0",
+    "rolling-spider": "~1.4.1"
+  },
+  "preferGlobal": true,
+  "devDependencies": {
+    "temporal": "^0.4.0"
+  }
 }
