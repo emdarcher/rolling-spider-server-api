@@ -123,13 +123,13 @@ exports.droneLand = function(req, res, next) {
     console.log('making drone land');
     rollingSpider.calibrate(function(err){
         if(err)throw err;
-        var cmdTimeout = setTimeout(function(){
-            res.send(500, {"error":"land command taking too long"});
-            return next();
-        }, 8000);
+        //var cmdTimeout = setTimeout(function(){
+        //    res.send(500, {"error":"land command taking too long"});
+        //    return next();
+        //}, 8000);
         rollingSpider.land(function(){
             console.log('drone has landed');
-            clearTimeout(cmdTimeout);
+        //    clearTimeout(cmdTimeout);
             //get_data_from_drone(function(e){if(e)throw e;});
             //return res.send({"message":"drone has landed"});
             res.send({"message":"drone has landed"});

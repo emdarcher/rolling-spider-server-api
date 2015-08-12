@@ -4,7 +4,7 @@
   "author": "Ethan Durrant",
   "license": "MIT",
   "main": "server.js",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "files": [
     "server.js",
     "routes/"
