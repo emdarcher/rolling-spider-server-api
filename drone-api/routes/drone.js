@@ -9,9 +9,7 @@ var drone_data = {
   signal_strength:"0",
   flying:false,
   battery:0,
-  wheels:true,
-  speed:0,
-  steps:0
+  wheels:true
 };
 
 function connectDrone( cb ){
