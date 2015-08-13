@@ -98,14 +98,14 @@ exports.droneTakeOff = function(req, res, next) {
     console.log('making drone take off');
     rollingSpider.calibrate(function(err){
         if(err) throw err;
-        var cmdTimeout = setTimeout(function(){
-            return res.send(500, {"error":"takeoff command taking too long"});
-            next();
-            //return next();
-        }, 8000);
+        //var cmdTimeout = setTimeout(function(){
+        //    return res.send(500, {"error":"takeoff command taking too long"});
+        //    next();
+        //    //return next();
+        //}, 8000);
         rollingSpider.takeOff(function(){
             console.log('drone took off, now hovering');
-            clearTimeout(cmdTimeout);
+        //    clearTimeout(cmdTimeout);
             //get_data_from_drone(function(e){if(e)throw e;});
             return res.send({"message":"drone took off, now hovering"});
             next();
@@ -175,7 +175,6 @@ exports.droneFrontFlip = function(req, res, next) {
         cmd_name: 'frontFlip'
     };
     singleCmd(req, res, next, details);
-    return next();
 };
 
 exports.droneBackFlip = function(req, res, next) {
@@ -185,7 +184,6 @@ exports.droneBackFlip = function(req, res, next) {
         cmd_name: 'backFlip'
     };
     singleCmd(req, res, next, details);
-    return next();
 };
 
 exports.droneLeftFlip = function(req, res, next) {
@@ -200,7 +198,6 @@ exports.droneLeftFlip = function(req, res, next) {
         };
         singleCmd(req, res, next, details);
     }
-    return next();
 };
 
 exports.droneRightFlip = function(req, res, next) {
@@ -215,7 +212,6 @@ exports.droneRightFlip = function(req, res, next) {
         };
         singleCmd(req, res, next, details);
     }
-    return next();
 };
 
 
@@ -265,7 +261,6 @@ exports.droneForward = function(req, res, next) {
         }
     }; 
     driveCmd(req, res, next, details);
-    return next();
 };
 
 exports.droneBackward = function(req, res, next) {
@@ -279,7 +274,6 @@ exports.droneBackward = function(req, res, next) {
         }
     }; 
     driveCmd(req, res, next, details);
-    return next();
 };
 
 exports.droneUp = function(req, res, next) {
@@ -293,7 +287,6 @@ exports.droneUp = function(req, res, next) {
         }
     }; 
     driveCmd(req, res, next, details);
-    return next();
 };
 
 exports.droneDown = function(req, res, next) {
@@ -307,7 +300,6 @@ exports.droneDown = function(req, res, next) {
         }
     }; 
     driveCmd(req, res, next, details);
-    return next();
 };
 
 exports.droneLeft = function(req, res, next) {
@@ -321,7 +313,6 @@ exports.droneLeft = function(req, res, next) {
         }
     }; 
     driveCmd(req, res, next, details);
-    return next();
 };
 
 exports.droneRight = function(req, res, next) {
@@ -335,9 +326,7 @@ exports.droneRight = function(req, res, next) {
         }
     }; 
     driveCmd(req, res, next, details);
-    return next();
 };
-
 exports.droneTiltLeft = function(req, res, next) {
     console.log('called path to tiltLeft function');
     var details = {
@@ -349,7 +338,6 @@ exports.droneTiltLeft = function(req, res, next) {
         }
     }; 
     driveCmd(req, res, next, details);
-    return next();
 };
 
 exports.droneTiltRight = function(req, res, next) {
@@ -363,7 +351,6 @@ exports.droneTiltRight = function(req, res, next) {
         }
     }; 
     driveCmd(req, res, next, details);
-    return next();
 };
 
 exports.droneTurnLeft = function(req, res, next) {
@@ -377,7 +364,6 @@ exports.droneTurnLeft = function(req, res, next) {
         }
     }; 
     driveCmd(req, res, next, details);
-    return next();
 };
 
 exports.droneTurnRight = function(req, res, next) {
@@ -391,5 +377,4 @@ exports.droneTurnRight = function(req, res, next) {
         }
     }; 
     driveCmd(req, res, next, details);
-    return next();
 };
