@@ -100,6 +100,7 @@ exports.droneTakeOff = function(req, res, next) {
         if(err) throw err;
         var cmdTimeout = setTimeout(function(){
             return res.send(500, {"error":"takeoff command taking too long"});
+            next();
             //return next();
         }, 8000);
         rollingSpider.takeOff(function(){
@@ -107,13 +108,14 @@ exports.droneTakeOff = function(req, res, next) {
             clearTimeout(cmdTimeout);
             //get_data_from_drone(function(e){if(e)throw e;});
             return res.send({"message":"drone took off, now hovering"});
+            next();
             //res.send({"message":"drone took off, now hovering"});
             //rollingSpider.calibrate();   
             //return next();
         });
         
     });
-    next();
+    //next();
     //return next();
 };
 
