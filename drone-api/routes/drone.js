@@ -94,7 +94,9 @@ exports.droneCalibrate = function(req, res, next){
     return next();
 };
 
+var takeOffId = 0;
 exports.droneTakeOff = function(req, res, next) {
+    var requestId = takeOffId++;
     console.log('making drone take off');
     rollingSpider.calibrate(function(err){
         if(err) throw err;
@@ -104,7 +106,7 @@ exports.droneTakeOff = function(req, res, next) {
         //    //return next();
         //}, 8000);
         rollingSpider.takeOff(function(){
-            console.log('drone took off, now hovering');
+            console.log('drone took off, now hovering', requestId);
         //    clearTimeout(cmdTimeout);
             //get_data_from_drone(function(e){if(e)throw e;});
             return res.send({"message":"drone took off, now hovering"});
