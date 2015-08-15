@@ -100,24 +100,28 @@ exports.droneTakeOff = function(req, res, next) {
     console.log('making drone take off');
     rollingSpider.calibrate(function(err){
         if(err) throw err;
-        //var cmdTimeout = setTimeout(function(){
-        //    return res.send(500, {"error":"takeoff command taking too long"});
-        //    next();
-        //    //return next();
-        //}, 8000);
+        var cmdTimeout = setTimeout(function(){
+            return res.send(500, {"error":"takeoff command taking too long"});
+            //next();
+            //return next();
+        }, 8000);
         rollingSpider.takeOff(function(){
             console.log('drone took off, now hovering', requestId);
-        //    clearTimeout(cmdTimeout);
+            clearTimeout(cmdTimeout);
             //get_data_from_drone(function(e){if(e)throw e;});
+            try {
             return res.send({"message":"drone took off, now hovering"});
-            next();
+            } catch (e) {
+                console.error("suppressing " + e);
+            }
+            //next();
             //res.send({"message":"drone took off, now hovering"});
             //rollingSpider.calibrate();   
             //return next();
         });
         
     });
-    //next();
+    next();
     //return next();
 };
 
@@ -134,7 +138,11 @@ exports.droneLand = function(req, res, next) {
         //    clearTimeout(cmdTimeout);
             //get_data_from_drone(function(e){if(e)throw e;});
             //return res.send({"message":"drone has landed"});
-            res.send({"message":"drone has landed"});
+            try { 
+            return res.send({"message":"drone has landed"});
+            } catch (e) {
+                console.error('suppressing ' + e);
+            }
             //return next();
         });
         

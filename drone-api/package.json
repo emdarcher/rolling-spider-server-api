@@ -4,7 +4,7 @@
   "author": "Ethan Durrant",
   "license": "MIT",
   "main": "server.js",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "bugs": {
     "url": "https://github.com/emdarcher/rolling-spider-server-api/issues"
   },
