@@ -7,7 +7,10 @@ var rollingSpider;
 var connectionCheckInterval;
 var connectionCheckIntervalDelay = 1000;
 
-var useConnectCheckInterval = false;
+var useConnectCheckInterval = true;
+
+var connectTimeout;
+var connectTimeoutDelay = 20000;
 
 var drone_data = {
   connected:false,
@@ -59,7 +62,6 @@ function connect_setup_drone( drone,  cb ){
                 });
             }
         });
-
     }
 }
 
@@ -67,10 +69,10 @@ var connectionCheck_running = false;
 function connectionCheckFunction( drone, cb ){
     //checks if drone is connected, if not, it tries to connect
     
-    if( !drone.connected && !init_running ){
+    if( !drone.connected ){
         if(!connectionCheck_running){
             connectionCheck_running = true;
-            console.log('detected drone not conected, trying to connect');
+            console.log('detected drone not connected, trying to connect');
             
             connect_setup_drone(drone, function(err){
                 connectionCheck_running = false;
@@ -108,18 +110,39 @@ exports.init_drone = function(init_data, cb ){
     rollingSpider = new RollingSpider(init_data.uuid);
     if(init_data.uuid) drone_data.Bluetooth_uuid = init_data.uuid;
     drone_data.wheels = init_data.wheels;
+
+    //create timeout that makes a connection check interval
+    //if it hasn't connected by the time the timeout triggers    
+    connectTimeout = setTimeout(function(){
+        //create interval for checking for connection
+        if(useConnectCheckInterval){
+            if(!connectionCheckInterval){
+                connectionCheckInterval = setInterval(function(){
+                    connection_running = false;
+                    connectionCheckFunction( rollingSpider, function(err){
+                        if(err) throw err;
+                    });
+                }, connectionCheckIntervalDelay );
+            }
+        }
+    }, connectTimeoutDelay );
+
     connect_setup_drone(rollingSpider, function(err){
         if(err){
             error = err;
         }
         init_running = false;
+        //clear the timeout
+        clearTimeout(connectTimeout);
         //create interval for checking for connection
         if(useConnectCheckInterval){
-            connectionCheckInterval = setInterval(function(){
-                connectionCheckFunction( rollingSpider, function(err){
-                    if(err) throw err;
-                });
-            }, connectionCheckIntervalDelay );
+            if(!connectionCheckInterval){
+                connectionCheckInterval = setInterval(function(){
+                    connectionCheckFunction( rollingSpider, function(err){
+                        if(err) throw err;
+                    });
+                }, connectionCheckIntervalDelay );
+            }
         }
         //rollingSpider.on('disconnect', function(){
         //    console.log('disconnect triggered');
@@ -130,29 +153,6 @@ exports.init_drone = function(init_data, cb ){
 
         return cb(error);
     });
-    //rollingSpider.connect(function(err){
-    //    if(err){ 
-    //        error = err;
-    //        console.log('error connecting to drone ' + init_data.uuid);
-    //    } else {
-    //        console.log('connected to drone ' + init_data.uuid);
-    //        rollingSpider.setup(function(err) {
-    //            if(err){
-    //                error = err;
-    //                console.log('error setting up drone ' + init_data.uuid);
-    //            } else {
-    //                rollingSpider.calibrate(); 
-    //                rollingSpider.startPing();
-    //                get_data_from_drone(function(e){if(e)throw e;});
-    //                console.log('setup drone ' + init_data.uuid);
-    //                rollingSpider.on('battery', function(){
-    //                    drone_data.battery = rollingSpider.status.battery;
-    //                });
-    //            }
-    //            return cb(error);
-    //        });
-    //    }
-    //});
 
     //init_running = false;
     //return cb(error);
@@ -199,15 +199,11 @@ exports.droneTakeOff = function(req, res, next) {
         rollingSpider.takeOff(function(){
             console.log('drone took off, now hovering', requestId);
             clearTimeout(cmdTimeout);
-            //get_data_from_drone(function(e){if(e)throw e;});
             try {
-            return res.send({"message":"drone took off, now hovering"});
+                return res.send({"message":"drone took off, now hovering"});
             } catch (e) {
                 console.error("suppressing " + e);
             }
-            //next();
-            //res.send({"message":"drone took off, now hovering"});
-            //rollingSpider.calibrate();   
             //return next();
         });
         
@@ -227,10 +223,8 @@ exports.droneLand = function(req, res, next) {
         rollingSpider.land(function(){
             console.log('drone has landed');
         //    clearTimeout(cmdTimeout);
-            //get_data_from_drone(function(e){if(e)throw e;});
-            //return res.send({"message":"drone has landed"});
             try { 
-            return res.send({"message":"drone has landed"});
+                return res.send({"message":"drone has landed"});
             } catch (e) {
                 console.error('suppressing ' + e);
             }
@@ -239,7 +233,7 @@ exports.droneLand = function(req, res, next) {
         
     });
 //    next();
-    return next();
+//    return next();
 };
 
 exports.droneEmergency = function(req, res, next) {
