@@ -7,6 +7,8 @@ var rollingSpider;
 var connectionCheckInterval;
 var connectionCheckIntervalDelay = 1000;
 
+var useConnectCheckInterval = false;
+
 var drone_data = {
   connected:false,
   Bluetooth_uuid:"auto",
@@ -112,12 +114,13 @@ exports.init_drone = function(init_data, cb ){
         }
         init_running = false;
         //create interval for checking for connection
-        connectionCheckInterval = setInterval(function(){
-            connectionCheckFunction( rollingSpider, function(err){
-                if(err) throw err;
-            });
-        }, connectionCheckIntervalDelay );
-        
+        if(useConnectCheckInterval){
+            connectionCheckInterval = setInterval(function(){
+                connectionCheckFunction( rollingSpider, function(err){
+                    if(err) throw err;
+                });
+            }, connectionCheckIntervalDelay );
+        }
         //rollingSpider.on('disconnect', function(){
         //    console.log('disconnect triggered');
         //    connectionCheckFunction( rollingSpider, function(err){
