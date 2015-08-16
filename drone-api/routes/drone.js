@@ -4,6 +4,8 @@
 var RollingSpider = require('rolling-spider');
 var rollingSpider;
 
+var connectionCheckInterval;
+
 var drone_data = {
   Bluetooth_uuid:"auto",
   signal_strength:"0",
@@ -12,8 +14,32 @@ var drone_data = {
   wheels:true
 };
 
-function connectDrone( cb ){
-    
+function connect_setup_drone( drone,  cb ){
+    var error = false; 
+    drone.connect(function(err){
+        if(err){ 
+            error = err;
+            console.log('error connecting to drone ' + drone.uuid);
+            return cb(error);
+        } else {
+            console.log('connected to drone ' + drone.uuid);
+            drone.setup(function(err) {
+                if(err){
+                    error = err;
+                    console.log('error setting up drone ' + drone.uuid);
+                } else {
+                    drone.calibrate(); 
+                    drone.startPing();
+                    get_data_from_drone(function(e){if(e)throw e;});
+                    console.log('setup drone ' + drone.uuid);
+                    drone.on('battery', function(){
+                        drone_data.battery = drone.status.battery;
+                    });
+                }
+                return cb(error);
+            });
+        }
+    });
 }
 
 function get_data_from_drone( cb ){
@@ -40,30 +66,38 @@ exports.init_drone = function(init_data, cb ){
     rollingSpider = new RollingSpider(init_data.uuid);
     if(init_data.uuid) drone_data.Bluetooth_uuid = init_data.uuid;
     drone_data.wheels = init_data.wheels;
-    rollingSpider.connect(function(err){
-        if(err){ 
+    connect_setup_drone(rollingSpider, function(err){
+        if(err){
             error = err;
-            console.log('error connecting to drone ' + init_data.uuid);
-        } else {
-            console.log('connected to drone ' + init_data.uuid);
-            rollingSpider.setup(function(err) {
-                if(err){
-                    error = err;
-                    console.log('error setting up drone ' + init_data.uuid);
-                } else {
-                    rollingSpider.calibrate(); 
-                    rollingSpider.startPing();
-                    get_data_from_drone(function(e){if(e)throw e;});
-                    console.log('setup drone ' + init_data.uuid);
-                    rollingSpider.on('battery', function(){
-                        drone_data.battery = rollingSpider.status.battery;
-                    });
-                }
-                return cb(error);
-            });
         }
+        init_running = false;
+        return cb(error);
     });
-    init_running = false;
+    //rollingSpider.connect(function(err){
+    //    if(err){ 
+    //        error = err;
+    //        console.log('error connecting to drone ' + init_data.uuid);
+    //    } else {
+    //        console.log('connected to drone ' + init_data.uuid);
+    //        rollingSpider.setup(function(err) {
+    //            if(err){
+    //                error = err;
+    //                console.log('error setting up drone ' + init_data.uuid);
+    //            } else {
+    //                rollingSpider.calibrate(); 
+    //                rollingSpider.startPing();
+    //                get_data_from_drone(function(e){if(e)throw e;});
+    //                console.log('setup drone ' + init_data.uuid);
+    //                rollingSpider.on('battery', function(){
+    //                    drone_data.battery = rollingSpider.status.battery;
+    //                });
+    //            }
+    //            return cb(error);
+    //        });
+    //    }
+    //});
+
+    //init_running = false;
     //return cb(error);
 };
 
