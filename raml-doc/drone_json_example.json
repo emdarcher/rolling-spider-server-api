@@ -1,9 +1,8 @@
 {
+  "connected":true,
   "Bluetooth_uuid":"id_num",
   "signal_strength":"-63",
   "flying":true,
   "battery":"40",
-  "wheels":true,
-  "speed":80,
-  "steps":55
+  "wheels":true
 }

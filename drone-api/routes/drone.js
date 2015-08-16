@@ -5,8 +5,10 @@ var RollingSpider = require('rolling-spider');
 var rollingSpider;
 
 var connectionCheckInterval;
+var connectionCheckIntervalDelay = 1000;
 
 var drone_data = {
+  connected:false,
   Bluetooth_uuid:"auto",
   signal_strength:"0",
   flying:false,
@@ -14,41 +16,79 @@ var drone_data = {
   wheels:true
 };
 
+var connection_running = false;
 function connect_setup_drone( drone,  cb ){
-    var error = false; 
-    drone.connect(function(err){
-        if(err){ 
-            error = err;
-            console.log('error connecting to drone ' + drone.uuid);
-            return cb(error);
-        } else {
-            console.log('connected to drone ' + drone.uuid);
-            drone.setup(function(err) {
-                if(err){
-                    error = err;
-                    console.log('error setting up drone ' + drone.uuid);
-                } else {
-                    drone.calibrate(); 
-                    drone.startPing();
-                    get_data_from_drone(function(e){if(e)throw e;});
-                    console.log('setup drone ' + drone.uuid);
-                    drone.on('battery', function(){
-                        drone_data.battery = drone.status.battery;
-                    });
-                }
+    if(!connection_running){
+        connection_running = true;
+        // tries to connect to the drone, then runs a setup
+        var error = false; 
+        
+        //rollingSpider.on('disconnect', function(){
+        //    console.log('disconnect triggered');
+        //    connection_running = false;
+        //    connectionCheckFunction( rollingSpider, function(err){
+        //        if(err) throw err;
+        //    });
+        //});
+
+        drone.connect(function(err){
+            if(err){ 
+                error = err;
+                console.log('error connecting to drone ' + drone.uuid);
+                connection_running = false;
                 return cb(error);
+            } else {
+                console.log('connected to drone ' + drone.uuid);
+                drone.setup(function(err) {
+                    if(err){
+                        error = err;
+                        console.log('error setting up drone ' + drone.uuid);
+                    } else {
+                        drone.calibrate(); 
+                        drone.startPing();
+                        get_data_from_drone(function(e){if(e)throw e;});
+                        console.log('setup drone ' + drone.uuid);
+                        drone.on('battery', function(){
+                            drone_data.battery = drone.status.battery;
+                        });
+                    }
+                    connection_running = false;
+                    return cb(error);
+                });
+            }
+        });
+
+    }
+}
+
+var connectionCheck_running = false;
+function connectionCheckFunction( drone, cb ){
+    //checks if drone is connected, if not, it tries to connect
+    
+    if( !drone.connected && !init_running ){
+        if(!connectionCheck_running){
+            connectionCheck_running = true;
+            console.log('detected drone not conected, trying to connect');
+            
+            connect_setup_drone(drone, function(err){
+                connectionCheck_running = false;
+                cb(err);
             });
         }
-    });
+    }
+
 }
 
 function get_data_from_drone( cb ){
     var error = false;
     console.log("getting data from drone");
-    rollingSpider.signalStrength(function(err, rssi){
-        if(err) error = err;
-        drone_data.signal_strength = rssi;
-    });
+    if(rollingSpider.connected){
+        rollingSpider.signalStrength(function(err, rssi){
+            if(err) error = err;
+            drone_data.signal_strength = rssi;
+        });
+    }
+    drone_data.connected = rollingSpider.connected;
     drone_data.battery = rollingSpider.status.battery;
     drone_data.flying = rollingSpider.status.flying;
     if(error){
@@ -71,6 +111,20 @@ exports.init_drone = function(init_data, cb ){
             error = err;
         }
         init_running = false;
+        //create interval for checking for connection
+        connectionCheckInterval = setInterval(function(){
+            connectionCheckFunction( rollingSpider, function(err){
+                if(err) throw err;
+            });
+        }, connectionCheckIntervalDelay );
+        
+        //rollingSpider.on('disconnect', function(){
+        //    console.log('disconnect triggered');
+        //    connectionCheckFunction( rollingSpider, function(err){
+        //        if(err) throw err;
+        //    });
+        //});
+
         return cb(error);
     });
     //rollingSpider.connect(function(err){
